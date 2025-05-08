@@ -1,0 +1,26 @@
+{
+  "name": "iflivraria",
+  "version": "1.0.0",
+  "description": "iflivraria",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/luancunha/iflivraria.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/luancunha/iflivraria/issues"
+  },
+  "homepage": "https://github.com/luancunha/iflivraria#readme",
+  "dependencies": {
+    "express": "^5.1.0",
+    "mongoose": "^8.14.2",
+    "nodemon": "^3.1.10"
+  }
+}
