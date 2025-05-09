@@ -61,7 +61,7 @@ app.post("/login", async (request, response) => {
     const body = request.body;
 
     try {
-        if (!body.email || !body.password) {
+        if (!body.email || !body.senha) {
             return response
                 .status(400)
                 .json({ message: "E-mail e/ou senha são obrigatório(s)" });
@@ -83,8 +83,8 @@ app.post("/login", async (request, response) => {
         }
 
         return response.status(200).json({
-            usuario: userExists.nome,
-            email: userExists.email,
+            usuario: usuarioExists.nome,
+            email: usuarioExists.email,
             token: TOKEN,
         });
     } catch (error) {
