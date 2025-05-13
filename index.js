@@ -1,18 +1,18 @@
 import express from "express";
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
-import dotenv from 'dotenv';
+import "dotenv/config";
 
-dotenv.config();
+import jwt from "jsonwebtoken";
 
 import UsuarioSchema from "./schemas/Usuario.js"
 
-mongoose.connect(process.env.MONGODB_URI);
+mongoose.connect(process.env.MONGODB_URL);
 
 const app = express();
 app.use(express.json());
 
-const TOKEN = process.env.TOKEN;
+const CHAVE_SECRETA = process.env.TOKEN_JWT;
 
 app.get("/", (request, response) => {
     return response.json({ message: "Rota inicial" });
@@ -82,10 +82,12 @@ app.post("/login", async (request, response) => {
             return response.status(400).json({ message: "Senha inválida" });
         }
 
+        const USER_TOKEN = jwt.sign({ id: usuarioExists._id, nome: usuarioExists.nome }, CHAVE_SECRETA)
+
         return response.status(200).json({
             usuario: usuarioExists.nome,
             email: usuarioExists.email,
-            token: TOKEN,
+            token: USER_TOKEN,
         });
     } catch (error) {
         return response.status(500).json({
