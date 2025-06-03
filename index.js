@@ -3,9 +3,13 @@ import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import "dotenv/config";
 
+import jwtVerify from "./services/jwt-verify.js";
+
 import jwt from "jsonwebtoken";
 
-import UsuarioSchema from "./schemas/Usuario.js"
+import UsuarioSchema from "./schemas/Usuario.js";
+import AutorSchema from "./schemas/Autor.js";
+import LivroSchema from "./schemas/Livro.js";
 
 mongoose.connect(process.env.MONGODB_URL);
 
@@ -95,5 +99,11 @@ app.post("/login", async (request, response) => {
         });
     }
 });
+
+app.get("/teste", jwtVerify, (request, response) => {
+    return response.json({ message: "Rota teste" });
+});
+
+
 
 app.listen("3333", () => { console.log("Servidor rodando...") });
