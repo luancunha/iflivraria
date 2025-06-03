@@ -104,6 +104,167 @@ app.get("/teste", jwtVerify, (request, response) => {
     return response.json({ message: "Rota teste" });
 });
 
+app.post("/autor", async (request, response) => {
+    const body = request.body;
 
+    if (body.nome) {
+        return response.status(400).json({ message: "O nome é obrigatório" });
+    }
+
+    try {
+        const autorCreated = await AutorSchema.create({
+            nome: body.nome,
+        });
+
+        return response.status(201).json(autorCreated);
+    } catch (error) {
+        return response.status(500).json({ message: "Erro no servidor!" });
+    }
+});
+
+app.get("/autores", async (request, response) => {
+    try {
+        const autores = await AutorSchema.find();
+
+        return response.json(autores);
+    } catch (error) {
+        return response.status(500).json({ message: "Erro no servidor!" });
+    }
+});
+
+app.delete("/autor/:id", async (request, response) => {
+    const id = request.params.id;
+
+    try {
+        await AutorSchema.findByIdAndDelete(id);
+        return response
+            .status(200)
+            .json({ message: "Autor removido com sucesso" });
+    } catch (error) {
+        return response.status(500).json({ message: `Erro no servidor: ${error}` });
+    }
+});
+
+app.put("/autor/:id", async (request, response) => {
+    const id = request.params.id;
+    const body = request.body;
+
+    try {
+        await AutorSchema.findByIdAndUpdate(id, { name: body.name });
+        return response
+            .status(200)
+            .json({ message: "Autor atualizado com sucesso" });
+    } catch (error) {
+        return response.status(500).json({ message: `Erro no servidor: ${error}` });
+    }
+});
+
+app.post("/livro", async (request, response) => {
+    const body = request.body;
+
+    try {
+        const autorExists = await AutorSchema.findById(
+            body.autor
+        );
+
+        if (!autorExists) {
+            return response
+                .status(404)
+                .json({ message: "Autor nao encontrado." });
+        }
+
+        await LivroSchema.create({
+            titulo: body.titulo,
+            resumo: body.resumo,
+            autor: body.autor,
+            url: body.url,
+        });
+
+        return response.status(201).json({ message: "Livro criado com sucesso" });
+    } catch (error) {
+        return response.status(500).json({ message: `Erro no servidor: ${error}` });
+    }
+});
+
+app.get("/livro", async (request, response) => {
+    try {
+        const books = await LivroSchema.find().populate("autor");
+        return response.json(books);
+    } catch (error) {
+        return response.status(500).json({ message: `Erro no servidor: ${error}` });
+    }
+});
+
+app.get("/livro/:id", async (request, response) => {
+    const id = request.params.id;
+
+    try {
+        const livros = await LivroSchema.find(id).populate("autor");
+
+        return response.json(livros);
+    } catch (error) {
+        return response.status(500).json({ message: 'Erro no servidor!" ${error}' });
+    }
+});
+
+app.put("/livro/:id", async (request, response) => {
+    const id = request.params.id;
+    const body = request.body;
+
+    if (!validarId(body.autor)) {
+        return response.status(400).json({ message: "ID Inválido." });
+    }
+
+    try {
+        const autorExists = await AutorSchema.findById(
+            body.autor
+        );
+
+        if (!autorExists) {
+            return response
+                .status(404)
+                .json({ message: "Autor nao encontrado." });
+        }
+
+        await LivroSchema.findByIdAndUpdate(id, {
+            titulo: body.titulo,
+            resumo: body.resumo,
+            autor: body.autor,
+            url: body.url,
+        });
+        return response
+            .status(200)
+            .json({ message: "Livro atualizado com sucesso" });
+    } catch (error) {
+        return response.status(500).json({ message: `Erro no servidor: ${error}` });
+    }
+});
+
+app.delete("/livro/:id", async (request, response) => {
+    const id = request.params.id;
+
+    if (!validarId(body.autor)) {
+        return response.status(400).json({ message: "ID Inválido." });
+    }
+
+    try {
+        const livroExists = await LivroSchema.findById(id);
+        if (!livroExists) {
+            return response.status(404).json({ message: "Livro inexistente" });
+        }
+
+        await LivroSchema.findByIdAndDelete(id);
+        return response
+            .status(200)
+            .json({ message: "Livro removido com sucesso" });
+    } catch (error) {
+        return response.status(500).json({ message: `Erro no servidor: ${error}` });
+    }
+});
+
+function validarId(id) {
+    var checkForHexRegExp = new RegExp("^[0-9a-fA-F]{24}$");
+    return checkForHexRegExp.test(id);
+}
 
 app.listen("3333", () => { console.log("Servidor rodando...") });
